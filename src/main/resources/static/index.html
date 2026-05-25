@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>STEGHUB</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1e2e;
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 2.8em;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .header h1 span {
+            color: #2ecc71;
+        }
+
+        .badge {
+            background: #2c3e66;
+            color: #b0c4ff;
+            display: inline-block;
+            padding: 6px 18px;
+            margin-top: 12px;
+            font-size: 0.8em;
+            border-radius: 20px;
+        }
+
+        .author {
+            color: #a0a8c0;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        .author strong {
+            color: #2ecc71;
+        }
+
+        /* Grid 2 колонки */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Карточки */
+        .card {
+            background: #0f1322;
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #2a2f42;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            border-color: #2ecc71;
+        }
+
+        .card h2 {
+            color: #2ecc71;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #2a2f42;
+        }
+
+        /* Формы */
+        input, textarea, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #1a1e30;
+            border: 1px solid #2e3a55;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #2ecc71;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        button {
+            background: #2ecc71;
+            color: #0a0e1a;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: #27ae60;
+            transform: scale(0.97);
+        }
+
+        /* Консоль */
+        .console {
+            background: #0b0e18;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #2a2f42;
+            margin-top: 20px;
+        }
+
+        .console h3 {
+            color: #2ecc71;
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+
+        .console p {
+            color: #a0a8c0;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        /* Футер */
+        .footer {
+            text-align: center;
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 1px solid #2a2f42;
+            color: #6a7090;
+            font-size: 0.75em;
+        }
+
+        /* Адаптив */
+        @media (max-width: 750px) {
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>STEG<span>HUB</span></h1>
+        <div class="badge">LSB Steganography | PNG Secure</div>
+        <div class="author">entwickelt von <strong>SAFWAT BURKHONOV</strong></div>
+    </div>
+
+    <div class="grid">
+        <!-- Encode -->
+        <div class="card">
+            <h2>📸 ENCODE</h2>
+            <form id="encodeForm">
+                <input type="file" id="encodeImage" accept="image/png" required>
+                <textarea id="message" rows="3" placeholder="Geheime Nachricht einfügen..." maxlength="1000"></textarea>
+                <button type="submit">VERSTECKEN & SPEICHERN</button>
+            </form>
+        </div>
+
+        <!-- Decode -->
+        <div class="card">
+            <h2>🔓 DECODE</h2>
+            <form id="decodeForm">
+                <input type="file" id="decodeImage" accept="image/png" required>
+                <button type="submit">NACHRICHT AUSLESEN</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Console -->
+    <div class="console" id="console">
+        <h3>⚡ CONSOLE</h3>
+        <p>[✓] System bereit | Modus: LSB PNG</p>
+    </div>
+
+    <div class="footer">
+        STEGHUB v1.0 · SAFWAT BURKHONOV · LSB Steganographie
+    </div>
+</div>
+
+<script>
+    const consoleDiv = document.getElementById('console');
+
+    function logMessage(msg, isError = false) {
+        const timestamp = new Date().toLocaleTimeString();
+        const color = isError ? '#ff7777' : '#2ecc71';
+        consoleDiv.innerHTML = `<h3>⚡ CONSOLE</h3><p style="color:${color}">[${timestamp}] ${msg}</p>`;
+    }
+
+    // Encode
+    document.getElementById('encodeForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const file = document.getElementById('encodeImage').files[0];
+        const message = document.getElementById('message').value;
+
+        if (!file || !message) {
+            logMessage('Fehler: Bild oder Nachricht fehlt', true);
+            return;
+        }
+
+        logMessage('Kodiere Nachricht in PNG ...');
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('message', message);
+
+        try {
+            const response = await fetch('/api/stegano/encode', { method: 'POST', body: formData });
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'stegohub_encoded.png';
+                a.click();
+                logMessage('✓ Erfolg! PNG wurde verschlüsselt und heruntergeladen.');
+            } else {
+                logMessage('Fehler beim Kodieren (HTTP ' + response.status + ')', true);
+            }
+        } catch (err) {
+            logMessage('Fehler: ' + err.message, true);
+        }
+    };
+
+    // Decode
+    document.getElementById('decodeForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const file = document.getElementById('decodeImage').files[0];
+
+        if (!file) {
+            logMessage('Fehler: Kein PNG ausgewählt', true);
+            return;
+        }
+
+        logMessage('Lese versteckte Nachricht aus ...');
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const response = await fetch('/api/stegano/decode', { method: 'POST', body: formData });
+            if (response.ok) {
+                const msg = await response.text();
+                logMessage(`✓ Nachricht: „${msg}“`);
+            } else {
+                logMessage('Keine Nachricht gefunden oder Datei ungültig', true);
+            }
+        } catch (err) {
+            logMessage('Fehler: ' + err.message, true);
+        }
+    };
+</script>
+</body>
+</html>
